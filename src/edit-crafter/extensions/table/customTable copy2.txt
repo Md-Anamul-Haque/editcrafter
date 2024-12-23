@@ -1,0 +1,175 @@
+import { Editor } from "@tiptap/core";
+import { Table, TableOptions } from "@tiptap/extension-table";
+import { TableCell } from "@tiptap/extension-table-cell";
+import { TableHeader } from "@tiptap/extension-table-header";
+import { TableRow } from "@tiptap/extension-table-row";
+import {
+  mergeAttributes,
+  NodeViewContent,
+  NodeViewProps,
+  NodeViewWrapper,
+  ReactNodeViewRenderer,
+} from "@tiptap/react";
+import { MinusIcon, PlusIcon, TableIcon, TypeIcon } from "lucide-react";
+import React, { useCallback, useState } from "react";
+
+const CustomTableCell = TableCell.extend({
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "td",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+      0,
+    ];
+  },
+});
+
+const CustomTableRow = TableRow.extend({
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "tr",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+      0,
+    ];
+  },
+});
+
+interface TableComponentProps extends NodeViewProps {
+  editor: Editor;
+}
+
+const TableComponent: React.FC<TableComponentProps> = ({
+  node,
+  updateAttributes,
+  deleteNode,
+  editor,
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+  }, []);
+
+  const handleBlur = useCallback((e: React.FocusEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsFocused(false);
+    }
+  }, []);
+
+  const addColumnBefore = () => editor.chain().focus().addColumnBefore().run();
+  const addColumnAfter = () => editor.chain().focus().addColumnAfter().run();
+  const deleteColumn = () => editor.chain().focus().deleteColumn().run();
+  const addRowBefore = () => editor.chain().focus().addRowBefore().run();
+  const addRowAfter = () => editor.chain().focus().addRowAfter().run();
+  const deleteRow = () => editor.chain().focus().deleteRow().run();
+  const toggleHeaderRow = () =>
+    updateAttributes({ withHeaderRow: !node.attrs.withHeaderRow });
+
+  const TableControls = () => (
+    <div className="flex flex-wrap gap-1 bg-gray-100 border border-gray-300 rounded p-1 mb-2">
+      <button
+        onClick={toggleHeaderRow}
+        className="flex items-center px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors duration-200"
+      >
+        <TypeIcon size={14} className="mr-1" /> Toggle Header
+      </button>
+      <button
+        onClick={addColumnBefore}
+        className="flex items-center px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors duration-200"
+      >
+        <PlusIcon size={14} className="mr-1" /> Col Before
+      </button>
+      <button
+        onClick={addColumnAfter}
+        className="flex items-center px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors duration-200"
+      >
+        <PlusIcon size={14} className="mr-1" /> Col After
+      </button>
+      <button
+        onClick={deleteColumn}
+        className="flex items-center px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors duration-200"
+      >
+        <MinusIcon size={14} className="mr-1" /> Delete Col
+      </button>
+      <button
+        onClick={addRowBefore}
+        className="flex items-center px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors duration-200"
+      >
+        <PlusIcon size={14} className="mr-1" /> Row Before
+      </button>
+      <button
+        onClick={addRowAfter}
+        className="flex items-center px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors duration-200"
+      >
+        <PlusIcon size={14} className="mr-1" /> Row After
+      </button>
+      <button
+        onClick={deleteRow}
+        className="flex items-center px-2 py-1 text-xs bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors duration-200"
+      >
+        <MinusIcon size={14} className="mr-1" /> Delete Row
+      </button>
+      <button
+        onClick={() => {
+          deleteNode();
+          alert("d");
+        }}
+        className="flex items-center px-2 py-1 text-xs bg-white border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors duration-200"
+      >
+        <TableIcon size={14} className="mr-1" /> Delete Table
+      </button>
+    </div>
+  );
+
+  return (
+    <NodeViewWrapper
+      className={`mb-4 p-2 rounded transition-all duration-300 ${
+        isFocused ? "ring-2 ring-blue-500" : "ring-1 ring-gray-200"
+      }`}
+      onClick={handleFocus}
+      onBlur={handleBlur}
+    >
+      {isFocused && <TableControls />}
+      <NodeViewContent
+        as="table"
+        className="w-full border-collapse"
+        tabIndex={0}
+      />
+    </NodeViewWrapper>
+  );
+};
+
+interface CustomTableOptions extends TableOptions {
+  HTMLAttributes: Record<string, any>;
+}
+
+export const CustomTable = Table.extend<CustomTableOptions>({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      withHeaderRow: {
+        default: true,
+        parseHTML: (element) => element.querySelector("thead") !== null,
+        renderHTML: (attributes) => {
+          if (!attributes.withHeaderRow) {
+            return {};
+          }
+          return {};
+        },
+      },
+    };
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "table",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+      0,
+    ];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(TableComponent);
+  },
+});
+
+export { CustomTableCell, CustomTableRow, TableHeader };

@@ -19,6 +19,7 @@ import {
   Selection,
   UnsetAllMarks
 } from '../extensions'
+import { CustomTable, CustomTableCell, CustomTableRow, TableHeader } from '../extensions/table/customTable'
 import { getOutput, randomId } from '../utils'
 import { useThrottle } from './use-throttle'
 type src = string
@@ -168,7 +169,18 @@ const createExtensions = (placeholder: string, onFileUpload: OnFileUpload | null
   HorizontalRule,
   ResetMarksOnEnter,
   CodeBlockLowlight,
-  Placeholder.configure({ placeholder: () => placeholder })
+  Placeholder.configure({ placeholder: () => placeholder }),
+
+  CustomTable.configure({
+    resizable: true,
+    HTMLAttributes: {
+      class: 'wp-table',
+    },
+  }),
+  CustomTableRow,
+  TableHeader,
+  CustomTableCell,
+
 ]
 
 export const useEditCrafterEditor = ({

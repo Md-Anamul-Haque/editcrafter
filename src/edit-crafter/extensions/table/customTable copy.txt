@@ -1,0 +1,265 @@
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Arrow } from "@radix-ui/react-tooltip";
+import { Editor } from "@tiptap/core";
+import { Table, TableOptions } from "@tiptap/extension-table";
+import { TableCell } from "@tiptap/extension-table-cell";
+import { TableHeader } from "@tiptap/extension-table-header";
+import { TableRow } from "@tiptap/extension-table-row";
+
+import {
+  mergeAttributes,
+  NodeViewContent,
+  NodeViewProps,
+  NodeViewWrapper,
+  ReactNodeViewRenderer,
+} from "@tiptap/react";
+import { MinusIcon, PlusIcon, TableIcon, TypeIcon } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+
+const CustomTableCell = TableCell.extend({
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "td",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+      0,
+    ];
+  },
+});
+
+const CustomTableRow = TableRow.extend({
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "tr",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+      0,
+    ];
+  },
+});
+
+interface TableComponentProps extends NodeViewProps {
+  editor: Editor;
+}
+
+const TableComponent: React.FC<TableComponentProps> = ({
+  node,
+  updateAttributes,
+  deleteNode,
+  editor,
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+  }, []);
+
+  const handleBlur = useCallback((e: React.FocusEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsFocused(false);
+    }
+  }, []);
+
+  const addColumnBefore = () => editor.chain().focus().addColumnBefore().run();
+  const addColumnAfter = () => editor.chain().focus().addColumnAfter().run();
+  const deleteColumn = () => editor.chain().focus().deleteColumn().run();
+  const addRowBefore = () => editor.chain().focus().addRowBefore().run();
+  const addRowAfter = () => editor.chain().focus().addRowAfter().run();
+  const deleteRow = () => editor.chain().focus().deleteRow().run();
+  const toggleHeaderRow = () =>
+    updateAttributes({ withHeaderRow: !node.attrs.withHeaderRow });
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const tableRef = useRef<HTMLTableElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        tableRef.current &&
+        !tableRef.current.contains(event.target as Node)
+      ) {
+        setIsPopoverOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleTableClick = useCallback(() => {
+    setIsPopoverOpen(true);
+  }, []);
+  return (
+    <NodeViewWrapper
+      className="wp-table-wrapper"
+      ref={tableRef}
+      onClick={handleTableClick}
+    >
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+        <PopoverTrigger asChild>
+          <div className="wp-table-popover-trigger" />
+        </PopoverTrigger>
+        <PopoverContent
+          sideOffset={-50}
+          className="wp-table-popover h-10 w-full p-0"
+          // align="start"
+        >
+          <TooltipProvider>
+            <div className="flex gap-1 h-10 w-full overflow-auto">
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button size="icon" onClick={toggleHeaderRow}>
+                    <TypeIcon className="w-4 h-4 mr-2" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Toggle Header</p>
+                  <Arrow className="fill-purple-500" />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button size="icon" onClick={addColumnBefore}>
+                    <PlusIcon className="w-4 h-4 mr-2" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Col Before</p>
+                  <Arrow className="fill-purple-500" />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button size="icon" onClick={addColumnAfter}>
+                    <PlusIcon className="w-4 h-4 mr-2" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p> Col After</p>
+                  <Arrow className="fill-purple-500" />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    onClick={deleteColumn}
+                  >
+                    <MinusIcon className="w-4 h-4 mr-2" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete Col</p>
+                  <Arrow className="fill-purple-500" />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button size="icon" onClick={addRowBefore}>
+                    <PlusIcon className="w-4 h-4 mr-2" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Row Before</p>
+                  <Arrow className="fill-purple-500" />
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button size="icon" onClick={addRowAfter}>
+                    <PlusIcon className="w-4 h-4 mr-2" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Row After</p>
+                  <Arrow className="fill-purple-500" />
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button size="icon" variant="destructive" onClick={deleteRow}>
+                    <MinusIcon className="w-4 h-4 mr-2" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete Row</p>
+                  <Arrow className="fill-purple-500" />
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    onClick={deleteNode}
+                  >
+                    <TableIcon className="w-4 h-4 mr-2" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete Table</p>
+                  <Arrow className="fill-purple-500" />
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
+        </PopoverContent>
+      </Popover>
+      <NodeViewContent as="table" className="wp-table" tabIndex={0} />
+    </NodeViewWrapper>
+  );
+};
+
+interface CustomTableOptions extends TableOptions {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  HTMLAttributes: Record<string, any>;
+}
+
+export const CustomTable = Table.extend<CustomTableOptions>({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      withHeaderRow: {
+        default: true,
+        parseHTML: (element) => element.querySelector("thead") !== null,
+        renderHTML: (attributes) => {
+          if (!attributes.withHeaderRow) {
+            return {};
+          }
+          return {};
+        },
+      },
+    };
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "table",
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+      0,
+    ];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(TableComponent, {
+      contentDOMElementTag: "tbody",
+    });
+  },
+});
+
+export { CustomTableCell, CustomTableRow, TableHeader };

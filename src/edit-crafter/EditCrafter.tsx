@@ -11,6 +11,7 @@ import { MeasuredContainer } from "./components/measured-container";
 import { SectionFive } from "./components/section/five";
 import { SectionFour } from "./components/section/four";
 import { SectionOne } from "./components/section/one";
+import SectionSix from "./components/section/six";
 import { SectionThree } from "./components/section/three";
 import { SectionTwo } from "./components/section/two";
 import type { UseEditCrafterEditorProps } from "./hooks/use-editCrafter";
@@ -63,6 +64,7 @@ const Toolbar = ({ editor }: { editor: Editor }) => (
         activeActions={["codeBlock", "blockquote", "horizontalRule"]}
         mainActionCount={0}
       />
+      <SectionSix editor={editor} />
     </div>
   </div>
 );
@@ -95,7 +97,7 @@ export const EditCrafterEditor = React.forwardRef<
         <Toolbar editor={editor} />
         <EditorContent
           editor={editor}
-          className={cn("editcrafter", editorContentClassName)}
+          className={cn("editcrafter edit-crafter", editorContentClassName)}
         />
         <LinkBubbleMenu editor={editor} />
       </MeasuredContainer>

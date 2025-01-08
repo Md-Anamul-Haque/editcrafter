@@ -9,7 +9,7 @@ export type CrafterPreviewProps = {
   className?: string;
 };
 
-export const CrafterPreview: FC<CrafterPreviewProps> = ({ value, className }) => {
+const CrafterPreview: FC<CrafterPreviewProps> = ({ value, className }) => {
   return (
     <MeasuredContainer
       as="div"
@@ -24,4 +24,5 @@ export const CrafterPreview: FC<CrafterPreviewProps> = ({ value, className }) =>
   );
 };
 
-export default CrafterPreview;
+export { CrafterPreview };
+

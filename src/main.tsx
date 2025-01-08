@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { EditCrafterEditor } from "./edit-crafter/EditCrafter";
+import { EditCrafterEditor } from "..";
 import "./index.css";
 import { cn } from "./lib/utils";
 createRoot(document.getElementById("root")!).render(

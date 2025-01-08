@@ -53,15 +53,9 @@ const createExtensions = (placeholder: string, onFileUpload: OnFileUpload | null
     maxFileSize: 5 * 1024 * 1024,
     allowBase64: false,
     uploadFn: onFileUpload ? async file => {
-
       // NOTE: This is a fake upload function. Replace this with your own upload logic.
       // This function should return the uploaded image URL.
-
-      // wait 3s to simulate upload
-      await new Promise(resolve => setTimeout(resolve, 3000))
-      alert(file)
       const src = await onFileUpload(file)
-
       // either return { id: string | number, src: string } or just src
       // return src;
       return { id: randomId(), src }

@@ -14,6 +14,7 @@ import { SectionOne } from "./components/section/one";
 import SectionSix from "./components/section/six";
 import { SectionThree } from "./components/section/three";
 import { SectionTwo } from "./components/section/two";
+import { CustomImageUploaderType, ToolbarProvider } from "./context/toolBarContext";
 import type { UseEditCrafterEditorProps } from "./hooks/use-editCrafter";
 import { useEditCrafterEditor } from "./hooks/use-editCrafter";
 
@@ -23,6 +24,7 @@ export interface EditCrafterProps
   onChange?: (value: Content) => void;
   className?: string;
   editorContentClassName?: string;
+  CustomImageUploader?: CustomImageUploaderType;
 }
 
 const Toolbar = ({ editor }: { editor: Editor }) => (
@@ -72,7 +74,7 @@ const Toolbar = ({ editor }: { editor: Editor }) => (
 export const EditCrafterEditor = React.forwardRef<
   HTMLDivElement,
   EditCrafterProps
->(({ value, onChange, className, editorContentClassName, ...props }, ref) => {
+>(({ value, onChange, className, CustomImageUploader, editorContentClassName, ...props }, ref) => {
   const editor = useEditCrafterEditor({
     value,
     onUpdate: onChange,
@@ -94,7 +96,9 @@ export const EditCrafterEditor = React.forwardRef<
           className
         )}
       >
-        <Toolbar editor={editor} />
+        <ToolbarProvider CustomImageUploader={CustomImageUploader}>
+          <Toolbar editor={editor} />
+        </ToolbarProvider>
         <EditorContent
           editor={editor}
           className={cn("editcrafter edit-crafter", editorContentClassName)}

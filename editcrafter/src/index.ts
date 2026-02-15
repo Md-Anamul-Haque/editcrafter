@@ -1,6 +1,5 @@
 // Export the main editor component
-export { EditCrafter } from "./components/edit-crafter/EditCrafter";
-export type { EditCrafterProps, ImageUploaderType } from "./components/edit-crafter/EditCrafter";
+export { type EditCrafterProps, type ImageUploaderType, EditCrafter } from "./components/edit-crafter/EditCrafter";
 
 // Export the preview component
 export { CrafterPreview } from "./components/CrafterPreview";

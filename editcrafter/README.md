@@ -29,13 +29,15 @@ yarn add editcrafter
 pnpm add editcrafter
 ```
 
+> **Note**: EditCrafter requires React 18+ or React 19+ as a peer dependency.
+
 ## Quick Start
 
 ### Basic Usage
 
 ```tsx
 import { EditCrafter } from 'editcrafter';
-import 'editcrafter/dist/editcrafter.css';
+import 'editcrafter/styles';
 
 function App() {
   const handleContentChange = (html: string) => {
@@ -59,7 +61,7 @@ Tailwind v4 changed how CSS is imported. Here's how to integrate EditCrafter:
 // app.tsx or main.tsx
 import { EditCrafter } from 'editcrafter';
 // Import the CSS file
-import 'editcrafter/dist/editcrafter.css';
+import 'editcrafter/styles';
 
 function App() {
   return (
@@ -75,7 +77,7 @@ function App() {
 ```css
 /* app.css or global.css */
 @import "tailwindcss";
-@import "editcrafter/dist/editcrafter.css";
+@import "editcrafter/styles";
 ```
 
 ### With Initial Content

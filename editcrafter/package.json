@@ -45,6 +45,16 @@
     "markdown-editor",
     "react-components"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Md-Anamul-Haque/editcrafter.git"
+  },
+  "author": "md-anamul-haque",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Md-Anamul-Haque/editcrafter/issues"
+  },
+  "homepage": "https://github.com/Md-Anamul-Haque/editcrafter#readme",
   "dependencies": {
     "@floating-ui/react": "^0.27.17",
     "@radix-ui/react-dropdown-menu": "^2.1.16",

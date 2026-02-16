@@ -54,12 +54,12 @@ body,
   font-family: "DM Sans", sans-serif;
 }
 
-.simple-editor-wrapper {
+.editcrafter-wrapper {
   height: 100vh;
   overflow: auto;
 }
 
-.simple-editor-content {
+.editcrafter-content {
   max-width: 648px;
   width: 100%;
   margin: 0 auto;
@@ -69,13 +69,13 @@ body,
   flex: 1;
 }
 
-.simple-editor-content .tiptap.ProseMirror.simple-editor {
+.editcrafter-content .tiptap.ProseMirror {
   flex: 1;
   padding: 3rem 3rem 30vh;
 }
 
 @media screen and (max-width: 480px) {
-  .simple-editor-content .tiptap.ProseMirror.simple-editor {
+  .editcrafter-content .tiptap.ProseMirror {
     padding: 1rem 1.5rem 30vh;
   }
 }

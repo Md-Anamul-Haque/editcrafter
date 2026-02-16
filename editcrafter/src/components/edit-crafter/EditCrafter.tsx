@@ -89,8 +89,8 @@ import { ThemeToggle } from "@/components/edit-crafter/theme-toggle";
 import { cn, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
 
 // --- Styles ---
-import "./editor.scss";
 import { useTiptapEditor } from "@/hooks/use-tiptap-editor";
+import "./editor.scss";
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -166,11 +166,7 @@ const MainToolbarContent = ({
           imageUploaderConfig?.CustomToolbarButton && (
             <imageUploaderConfig.CustomToolbarButton
               addImage={(url: string) => {
-                editor
-                  ?.chain()
-                  .focus()
-                  .setImage({ src: url })
-                  .run();
+                editor?.chain().focus().setImage({ src: url }).run();
               }}
             />
           )
@@ -221,40 +217,41 @@ const MobileToolbarContent = ({
 
 export type ImageUploaderType =
   | {
-    enabledefault: true;
-    CustomToolbarButton?: React.ComponentType<{
-      addImage: (file: string) => void;
-    }>;
-    defaultUploadHandler: (
-      file: File,
-      onProgress?: (event: { progress: number }) => void,
-      abortSignal?: AbortSignal
-    ) => Promise<string>;
-  }
+      enabledefault: true;
+      CustomToolbarButton?: React.ComponentType<{
+        addImage: (file: string) => void;
+      }>;
+      defaultUploadHandler: (
+        file: File,
+        onProgress?: (event: { progress: number }) => void,
+        abortSignal?: AbortSignal
+      ) => Promise<string>;
+    }
   | {
-    enabledefault?: false;
-    CustomToolbarButton: React.ComponentType<{
-      addImage: (file: string) => void;
-    }>;
-    defaultUploadHandler?: undefined;
-  };
+      enabledefault?: false;
+      CustomToolbarButton: React.ComponentType<{
+        addImage: (file: string) => void;
+      }>;
+      defaultUploadHandler?: undefined;
+    };
 
 export type EditCrafterProps = {
   initialValue?: string;
   onContentChange?: (value: string) => void;
-  wrapperClassName?: string;
-  contentClassName?: string;
   imageUploaderConfig?: ImageUploaderType;
   placeholder?: string;
+  classNames?: {
+    wrapper?: string;
+    content?: string;
+  };
 };
 
 export function EditCrafter({
   initialValue,
   onContentChange,
-  wrapperClassName,
-  contentClassName,
   imageUploaderConfig,
   placeholder,
+  classNames: { wrapper: wrapperClassName, content: contentClassName } = {},
 }: EditCrafterProps) {
   const isMobile = useIsBreakpoint();
   const { height } = useWindowSize();
@@ -277,7 +274,7 @@ export function EditCrafter({
         autocorrect: "off",
         autocapitalize: "off",
         "aria-label": "Main content area, start typing to enter text.",
-        class: "simple-editor",
+        class: "prose",
       },
     },
     extensions: [
@@ -310,25 +307,17 @@ export function EditCrafter({
       Selection,
       ...(imageUploaderConfig?.enabledefault
         ? [
-          ImageUploadNode.configure({
-            accept: "image/*",
-            maxSize: MAX_FILE_SIZE,
-            limit: 3,
-            upload: imageUploaderConfig.defaultUploadHandler,
-            onError: (error) => console.error("Upload failed:", error),
-          }),
-        ]
+            ImageUploadNode.configure({
+              accept: "image/*",
+              maxSize: MAX_FILE_SIZE,
+              limit: 3,
+              upload: imageUploaderConfig.defaultUploadHandler,
+              onError: (error) => console.error("Upload failed:", error),
+            }),
+          ]
         : []),
     ],
-    content:
-      initialValue?.trim() ||
-      `
-      <p>Welcome to the <strong>Simple Editor</strong>! This editor is built with <em>Tiptap</em> and includes a variety of features to enhance your writing experience.</p>
-      <p>Use the toolbar above to format your text, insert images, create tables, and more. The editor is designed to be responsive, so you can enjoy a seamless experience on both desktop and mobile devices.</p>
-      <p>Feel free to explore the different formatting options, such as headings, lists, blockquotes, and code blocks. You can also highlight important text with multiple colors or add links to your content.</p>
-      <p>On mobile devices, the toolbar adapts to provide a user-friendly interface, allowing you to easily access formatting options without cluttering the screen.</p>
-      <p>Experiment with the various features and see how they can help you create rich, engaging content. Happy writing!</p>
-    `,
+    content: initialValue?.trim() || "",
   });
 
   useLayoutEffect(() => {
@@ -366,15 +355,17 @@ export function EditCrafter({
     };
   }, [editor]);
   return (
-    <div className={cn("simple-editor-wrapper", wrapperClassName)}>
+    <div
+      className={cn("editcrafter prose editcrafter-wrapper", wrapperClassName)}
+    >
       <EditorContext.Provider value={{ editor }}>
         <Toolbar
           ref={toolbarRef}
           style={{
             ...(isMobile
               ? {
-                bottom: `calc(100% - ${height - rect.y}px)`,
-              }
+                  bottom: `calc(100% - ${height - rect.y}px)`,
+                }
               : {}),
           }}
         >
@@ -398,7 +389,7 @@ export function EditCrafter({
           editor={editor}
           role="presentation"
           placeholder={placeholder || "Start writing here..."}
-          className={cn("simple-editor-content", contentClassName)}
+          className={cn("editcrafter-content prose", contentClassName)}
         />
         {/* Add these components outside EditorContent for proper positioning */}
         <TableHandle />

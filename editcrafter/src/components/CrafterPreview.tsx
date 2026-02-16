@@ -11,11 +11,11 @@ const CrafterPreview: FC<CrafterPreviewProps> = ({ value, className }) => {
   return (
     <div
       className={cn(
-        "editcrafter flex h-auto min-h-72 w-full flex-col rounded-md border border-input shadow-sm focus-within:border-primary",
+        "editcrafter editcrafter-wrapper editcrafter-content prose ",
         className
       )}
     >
-      {parse(value)}
+      <div className=" tiptap ProseMirror editcrafter ">{parse(value)}</div>
     </div>
   );
 };

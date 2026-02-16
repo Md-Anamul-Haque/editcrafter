@@ -32,7 +32,11 @@ export default defineConfig({
       fileName: (format) => `editcrafter.${format}.js`
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+      ],
       output: {
         globals: {
           react: 'React',
